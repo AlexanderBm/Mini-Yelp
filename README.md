@@ -9,7 +9,6 @@ The Mini Yelp Clone is a web application that allows users to discover nearby re
 - **Restaurant Discovery**: Automatically retrieves nearby restaurants based on the user's location.
 - **Reviews**: Users can view existing reviews and submit their own ratings and comments.
 - **Average Ratings**: Displays the average rating for each restaurant based on user submissions.
-- **Responsive Design**: Optimized for desktop and mobile views.
 
 ## Technologies Used
 
