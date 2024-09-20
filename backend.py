@@ -3,6 +3,10 @@ import json
 import requests
 import time
 import googlemaps
+import os
+
+# env key for google api
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
 
 app = Flask(__name__)
 
@@ -72,7 +76,6 @@ def get_average_ratings_and_restaurants_nearby():
     return jsonify(res_and_rating)
 
 def get_restaurants(location):
-    GOOGLE_API_KEY = 'AIzaSyCYn-VKpAOnP66lc_GrbWQ1XF_opF5kT5I'
     map_client = googlemaps.Client(GOOGLE_API_KEY) 
     
     search_string = 'restaurant'
