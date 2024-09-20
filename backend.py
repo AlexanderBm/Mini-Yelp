@@ -4,6 +4,7 @@ import requests
 import time
 import googlemaps
 import os
+import re
 
 # env key for google api
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
@@ -62,6 +63,7 @@ def get_average_ratings_and_restaurants_nearby():
 
     location = (lat, lng)
     list_of_restaurants = get_restaurants(location)
+    list_of_restaurants = [replace_single_quotes(res) for res in list_of_restaurants]
 
     with open('reviews.json', 'r') as file:
         reviews = json.load(file)
@@ -101,6 +103,9 @@ def get_restaurants(location):
         next_page_token = response.get('next_page_token')
         
     return [item['name'] for item in restaurant_list]
+
+def replace_single_quotes(text):
+    return re.sub(r"'", '’', text)
 
 if __name__ == '__main__':
     app.run(debug=True)
