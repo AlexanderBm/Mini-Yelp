@@ -1,7 +1,6 @@
 import json
 import requests
 import time
-import pandas as pd
 import googlemaps
 
 def get_reviews(restaurant):
@@ -29,7 +28,9 @@ def write_review(restaurant, rating, review):
     with open('reviews.json', 'w') as f: 
         json.dump(reviews, f)
 
-def get_average_ratings(list_of_restaurants):
+def get_average_ratings_and_restaurants_nearby(location):
+    list_of_restaurants = get_restaurants(location)
+
     with open('reviews.json', 'r') as file:
         reviews = json.load(file)
     
@@ -43,7 +44,7 @@ def get_average_ratings(list_of_restaurants):
     return res_and_rating
 
 def get_restaurants(location):
-    # map_client = googlemaps.Client(GOOGLE_API_KEY) 
+    map_client = 1 # googlemaps.Client(GOOGLE_API_KEY) 
     
     search_string = 'restaurant'
     distance = 8046.72
@@ -52,8 +53,7 @@ def get_restaurants(location):
     response = map_client.places_nearby(
         location=location,
         keyword=search_string,
-        radius=distance
-    )
+        radius=distance)
     
     restaurant_list.extend(response.get('results'))
     next_page_token = response.get('next_page_token')
@@ -64,8 +64,7 @@ def get_restaurants(location):
             location=location,
             keyword=search_string,
             radius=distance,
-            page_token = next_page_token
-        )
+            page_token = next_page_token)
         restaurant_list.extend(response.get('results'))
         next_page_token = response.get('next_page_token')
         
