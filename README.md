@@ -48,7 +48,7 @@ The Mini Yelp is a web application that allows users to discover nearby restaura
 
 4. **Run the Application**:
    ```bash
-   python app.py
+   python backend.py
    ```
 
 5. **Access the App**: Open your web browser and go to `http://127.0.0.1:5000`.
