@@ -66,9 +66,7 @@ The Mini Yelp Clone is a web application that allows users to discover nearby re
 │
 ├── app.py               # Main Flask application
 ├── reviews.json         # JSON file to store reviews
-├── templates
-│   ├── index.html       # Homepage template
-│   └── reviews.html     # Reviews page template
-└── static
-    └── styles.css       # CSS styles (if any)
+└── templates
+    ├── index.html       # Homepage template
+    └── reviews.html     # Reviews page template
 ```
