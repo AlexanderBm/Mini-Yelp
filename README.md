@@ -1,8 +1,8 @@
-# Mini Yelp Clone
+# Mini Yelp
 
 ## Overview
 
-The Mini Yelp Clone is a web application that allows users to discover nearby restaurants and leave reviews. It utilizes the Google Maps API to fetch restaurant information based on the user's geolocation. The app stores reviews in a JSON file, providing an easy way for users to see average ratings and read or submit reviews.
+The Mini Yelp is a web application that allows users to discover nearby restaurants and leave reviews. It utilizes the Google Maps API to fetch restaurant information based on the user's geolocation. The app stores reviews in a JSON file, providing an easy way for users to see average ratings and read or submit reviews.
 
 ## Features
 
@@ -30,7 +30,7 @@ The Mini Yelp Clone is a web application that allows users to discover nearby re
 1. **Clone the repository**:
    ```bash
    git clone <repository-url>
-   cd mini-yelp-clone
+   cd mini-yelp
    ```
 
 2. **Install Flask**:
@@ -61,7 +61,7 @@ The Mini Yelp Clone is a web application that allows users to discover nearby re
 ## File Structure
 
 ```
-/mini-yelp-clone
+/mini-yelp
 │
 ├── app.py               # Main Flask application
 ├── reviews.json         # JSON file to store reviews
