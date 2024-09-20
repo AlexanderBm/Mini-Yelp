@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .review { margin: 10px 0; }
+        .review-form { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="restaurant-name">Reviews for Restaurant</h1>
+        <div id="reviews-list"></div>
+        <div class="review-form">
+            <h4>Add a Review</h4>
+            <input type="number" id="rating" placeholder="Rating (0-5)" step="0.1" min="0" max="5" required><br>
+            <textarea id="review-text" placeholder="Your Review" required></textarea><br>
+            <button onclick="submitReview()">Submit Review</button>
+            <button onclick="location.href='/'">Back to Restaurants</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const restaurant = urlParams.get('restaurant');
+
+        document.getElementById('restaurant-name').textContent = `Reviews for ${restaurant}`;
+        
+        fetch(`/get_reviews?restaurant=${encodeURIComponent(restaurant)}`)
+            .then(response => response.json())
+            .then(data => {
+                const reviewsList = document.getElementById('reviews-list');
+                if (data.length > 0) {
+                    data.forEach(review => {
+                        const reviewDiv = document.createElement('div');
+                        reviewDiv.className = 'review';
+                        reviewDiv.innerHTML = `<p>Rating: ${review[0]} - ${review[1]}</p>`;
+                        reviewsList.appendChild(reviewDiv);
+                    });
+                } else {
+                    const noReviewsMessage = document.createElement('p');
+                    noReviewsMessage.textContent = 'No reviews yet.';
+                    reviewsList.appendChild(noReviewsMessage);
+                }
+            })
+            .catch(error => console.error('Error fetching reviews:', error));
+
+        function submitReview() {
+            const rating = parseFloat(document.getElementById('rating').value);
+            const review = document.getElementById('review-text').value;
+
+            fetch('/write_review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ restaurant, rating, review })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                location.reload(); // Refresh the page to show the new review
+            })
+            .catch(error => console.error('Error submitting review:', error));
+        }
+    </script>
+</body>
+</html>

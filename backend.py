@@ -1,10 +1,23 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import json
 import requests
 import time
 import googlemaps
 
-def get_reviews(restaurant):
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/reviews')
+def reviews():
+    return render_template('reviews.html')
+
+@app.route('/get_reviews', methods=['GET'])
+def get_reviews():
+    restaurant = request.args.get('restaurant')
+
     with open('reviews.json', 'r') as file:
         reviews = json.load(file)
         
@@ -12,8 +25,14 @@ def get_reviews(restaurant):
         return jsonify(reviews[restaurant][1:])
     except Exception as e:
         return jsonify("No reviews yet")
-    
-def write_review(restaurant, rating, review):
+
+@app.route('/write_review', methods=['POST'])
+def write_review():
+    data = request.json
+    restaurant = data.get('restaurant')
+    rating = data.get('rating')
+    review = data.get('review')
+
     with open('reviews.json', 'r') as file:
         reviews = json.load(file)
     
@@ -29,7 +48,15 @@ def write_review(restaurant, rating, review):
     with open('reviews.json', 'w') as f: 
         json.dump(reviews, f)
 
-def get_average_ratings_and_restaurants_nearby(location):
+@app.route('/get_restaurants', methods=['GET'])
+def get_average_ratings_and_restaurants_nearby():
+    location = request.args.get('location')
+    if location:
+        lat, lng = map(float, location.split(','))
+    else:
+        return jsonify({"error": "Location not provided"}), 400
+
+    location = (lat, lng)
     list_of_restaurants = get_restaurants(location)
 
     with open('reviews.json', 'r') as file:
@@ -45,7 +72,8 @@ def get_average_ratings_and_restaurants_nearby(location):
     return jsonify(res_and_rating)
 
 def get_restaurants(location):
-    map_client = 1 # googlemaps.Client(GOOGLE_API_KEY) 
+    GOOGLE_API_KEY = 'AIzaSyCYn-VKpAOnP66lc_GrbWQ1XF_opF5kT5I'
+    map_client = googlemaps.Client(GOOGLE_API_KEY) 
     
     search_string = 'restaurant'
     distance = 8046.72
@@ -70,3 +98,6 @@ def get_restaurants(location):
         next_page_token = response.get('next_page_token')
         
     return [item['name'] for item in restaurant_list]
+
+if __name__ == '__main__':
+    app.run(debug=True)

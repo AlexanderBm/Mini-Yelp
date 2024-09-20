@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Yelp Clone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .restaurant-list {
+            margin-bottom: 20px;
+        }
+        .restaurant {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mini Yelp Clone</h1>
+        <div class="restaurant-list" id="restaurant-list">
+            <!-- Restaurant information will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        let userLocation = null;
+
+        // Automatically get location and load nearby restaurants when the page loads
+        window.onload = function() {
+            getLocation();
+        };
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    getNearbyRestaurants(userLocation);
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function getNearbyRestaurants(location) {
+            fetch(`/get_restaurants?location=${location.lat},${location.lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    const restaurantList = document.getElementById('restaurant-list');
+                    restaurantList.innerHTML = ''; // Clear previous restaurant list
+
+                    data.forEach(restaurant => {
+                        const div = document.createElement('div');
+                        div.className = 'restaurant';
+                        div.innerHTML = `<h4 onclick="location.href='reviews?restaurant=${encodeURIComponent(restaurant[0])}'">${restaurant[0]}</h4><p>Average Rating: ${restaurant[1]}</p>`;
+                        restaurantList.appendChild(div);
+                    });
+                })
+                .catch(error => console.error('Error fetching restaurants:', error));
+        }
+    </script>
+</body>
+</html>
