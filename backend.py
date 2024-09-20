@@ -1,3 +1,4 @@
+from flask import Flask, jsonify, request
 import json
 import requests
 import time
@@ -8,9 +9,9 @@ def get_reviews(restaurant):
         reviews = json.load(file)
         
     try:
-        return reviews[restaurant][1:]
+        return jsonify(reviews[restaurant][1:])
     except Exception as e:
-        return "No reviews yet"
+        return jsonify("No reviews yet")
     
 def write_review(restaurant, rating, review):
     with open('reviews.json', 'r') as file:
@@ -41,7 +42,7 @@ def get_average_ratings_and_restaurants_nearby(location):
         else:
             res_and_rating.append([res, 0])
     
-    return res_and_rating
+    return jsonify(res_and_rating)
 
 def get_restaurants(location):
     map_client = 1 # googlemaps.Client(GOOGLE_API_KEY) 
