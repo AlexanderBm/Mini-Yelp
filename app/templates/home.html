@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Yelp Clone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .restaurant-list {
+            margin-bottom: 20px;
+        }
+        .restaurant {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mini Yelp Clone</h1>
+        <div class="restaurant-list" id="restaurant-list">
+            <!-- Restaurant information will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        let userLocation = null;
+
+        // Automatically get location and load nearby restaurants when the page loads
+        window.onload = function() {
+            getLocation();
+        };
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    fetchRestaurantsFromDB(); // Fetch from DB first
+                    updateRestaurants(userLocation); // Start background update
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Fetch restaurants from the database and display them
+        function fetchRestaurantsFromDB() {
+    if (!userLocation) {
+        console.error("Location is not available.");
+        return;
+    }
+
+    const locationParam = `${userLocation.lat},${userLocation.lng}`;
+    fetch(`/get_restaurants_from_db?location=${locationParam}`)
+        .then(response => response.json())
+        .then(data => {
+            const restaurantList = document.getElementById('restaurant-list');
+            restaurantList.innerHTML = ''; // Clear previous restaurant list
+
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(restaurant => {
+                    const div = document.createElement('div');
+                    div.className = 'restaurant';
+                    div.innerHTML = `
+                        <h4 onclick="location.href='reviews?restaurant=${encodeURIComponent(restaurant.name)}'">
+                            ${restaurant.name}
+                        </h4>
+                        <p>Average Rating: ${restaurant.avg_rating}</p>`;
+                    restaurantList.appendChild(div);
+                });
+            } else {
+                const message = document.createElement('p');
+                message.textContent = "No restaurants found.";
+                restaurantList.appendChild(message);
+            }
+        })
+        .catch(error => console.error('Error fetching restaurants from DB:', error));
+}
+
+        // Trigger background update to fetch new restaurants and refresh the list
+        function updateRestaurants(location) {
+            fetch(`/update_restaurants`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ location: `${location.lat},${location.lng}` })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.message);
+                    // Optionally refresh after some time
+                    setTimeout(fetchRestaurantsFromDB, 5000); // Refresh after 5 seconds
+                })
+                .catch(error => console.error('Error updating restaurants:', error));
+        }
+    </script>
+</body>
+</html>
